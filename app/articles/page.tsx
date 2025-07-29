@@ -23,7 +23,7 @@ export default function ArticlesPage() {
             { title: "Personality Models", image: "/image/personalitymodules.JPG", href: "/articles/ai/personality-models" },
             { title: "Psychometrics", image: "/image/psychometrics.JPG", href: "/articles/ai/psychometrics" },
             { title: "Neural Feedback", image: "/image/Neuralfeedback.jpg", href: "/articles/ai/neural-feedback" },
-            { title: "Ethics", image: "/image/ethics.jpg", href: "/articles/ai/ethics" },
+            { title: "Ethics", image: "/image/Ethics.jpg", href: "/articles/ai/ethics" },
             { title: "EmoConnect", image: "/image/emoconnectjpg.jpg", href: "/articles/ai/emoconnect" },
             { title: "SelfCode", image: "/image/selfCode.jpg", href: "/articles/ai/selfCode" },
             { title: "Aesthlyzer", image: "/image/aesthlyzerjpg.jpg", href: "/articles/ai/aesthlyzer" },
@@ -41,10 +41,10 @@ export default function ArticlesPage() {
           description="Explore insights and deep dives in psychology."
           cards={[
             { title: "Mental Health", image: "/image/mentalhealth.jpg", href: "/articles/psychology/mental-health" },
-            { title: "Personality", image: "/image/Personality.JPG", href: "/articles/psychology/personality" },
+            { title: "Personality", image: "/image/personality.JPG", href: "/articles/psychology/personality" },
             { title: "Emotional Intelligence", image: "/image/EmotionalIntelligence.JPG", href: "/articles/psychology/emotional-intelligence" },
             { title: "Therapy", image: "/image/therapy.jpg", href: "/articles/psychology/therapy" },
-            { title: "Biases", image: "/image/ethics.jpg", href: "/articles/psychology/biases" },
+            { title: "Biases", image: "/image/biases.jpg", href: "/articles/psychology/biases" },
             { title: "EmoConnect", image: "/image/emoconnectjpg.jpg", href: "/articles/psychology/emoconnect" },
             { title: "Selflyzer Trace", image: "/image/Who am I_.jpg", href: "/articles/psychology/selflyzer-trace" },
             { title: "Aesthlyzer", image: "/image/aesthlyzerjpg.jpg", href: "/articles/psychology/aesthlyzer" },
