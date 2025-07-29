@@ -63,7 +63,7 @@ export default function ArticlesPage() {
           description="Explore insights and deep dives in marketing."
           cards={[
             { title: "Consumer Behavior", image: "/image/ConsumerBehavior.jpg", href: "/articles/marketing/consumer-behavior" },
-            { title: "Brand Identity", image: "/image/brandidentity.jpg", href: "/articles/marketing/brand-identity" },
+            { title: "Brand Identity", image: "/image/brandidentity.JPG", href: "/articles/marketing/brand-identity" },
             { title: "Emotional Marketing", image: "/image/emotionalmarketing.jpg", href: "/articles/marketing/emotional-marketing" },
             { title: "Neuromarketing", image: "/image/Neuralfeedback.jpg", href: "/articles/marketing/neuromarketing" },
             { title: "UX & Psychology", image: "/image/UXPsychology.jpg", href: "/articles/marketing/ux-psychology" },
