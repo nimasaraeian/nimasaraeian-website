@@ -2,6 +2,7 @@
 
 import WaveSeparator from "@/components/WaveSeparator";
 import Link from "next/link";
+import { title } from "process";
 
 export default function ArticlesPage() {
   return (
@@ -28,6 +29,7 @@ export default function ArticlesPage() {
             { title: "SelfCode", image: "/image/selfCode.jpg", href: "/articles/ai/selfCode" },
             { title: "Aesthlyzer", image: "/image/aesthlyzerjpg.jpg", href: "/articles/ai/aesthlyzer" },
             { title: "Chrono Forecast", image: "/image/ChronoForecast.jpg", href: "/articles/ai/chrono-forecast" },
+            { title: "AI-Powered Content Specialist", image: "/image/AI-Powered Content Specialist.jpg", href: "/articles/ai/ai-powered-content-specialist" },
           ]}
           bgColor="from-gray-900 to-gray-800"
           borderColor="border-blue-500/30"
@@ -65,7 +67,7 @@ export default function ArticlesPage() {
             { title: "Consumer Behavior", image: "/image/ConsumerBehavior.jpg", href: "/articles/marketing/consumer-behavior" },
             { title: "Brand Identity", image: "/image/brandidentity.JPG", href: "/articles/marketing/brand-identity" },
             { title: "Emotional Marketing", image: "/image/emotionalmarketing.jpg", href: "/articles/marketing/emotional-marketing" },
-            { title: "Neuromarketing", image: "/image/Neuralfeedback.jpg", href: "/articles/marketing/neuromarketing" },
+            { title: "Neuromarketing", image: "/image/neuromarketing.jpg", href: "/articles/marketing/neuromarketing" },
             { title: "UX & Psychology", image: "/image/UXPsychology.jpg", href: "/articles/marketing/ux-psychology" },
           ]}
           bgColor="from-green-900/20 to-gray-900"
