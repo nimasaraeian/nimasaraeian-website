@@ -13,7 +13,8 @@ export default function SideMenu() {
     { id: 'articles', label: 'Articles', href: '/articles' },
     { id: 'research', label: 'Research', href: '/research' },
     { id: 'seminars', label: 'Speaking', href: '/seminars' },
-    { id: 'contact', label: 'Contact', href: '/contact' }
+    { id: 'contact', label: 'Contact', href: '/contact' },
+    { id: 'workspace', label: 'Workspace', href: '/workspace' }
   ];
 
   return (
@@ -56,8 +57,12 @@ export default function SideMenu() {
             href={item.href}
             className="group relative block flex-shrink-0"
           >
-            <span 
-              className="text-white font-medium text-[9px] xs:text-[10px] sm:text-xs md:text-sm lg:text-base group-hover:text-blue-200 transition-colors duration-300 px-1 xs:px-1.5 sm:px-2 md:px-2.5 lg:px-3 py-0.5 sm:py-1 md:py-1.5 lg:py-2 rounded hover:bg-white/10 whitespace-nowrap"
+            <span
+              className={`font-medium text-[9px] xs:text-[10px] sm:text-xs md:text-sm lg:text-base transition-colors duration-300 px-1 xs:px-1.5 sm:px-2 md:px-2.5 lg:px-3 py-0.5 sm:py-1 md:py-1.5 lg:py-2 rounded whitespace-nowrap ${
+                item.id === 'workspace'
+                  ? 'text-yellow-400 border border-yellow-600/50 group-hover:text-yellow-300 group-hover:bg-yellow-900/20'
+                  : 'text-white group-hover:text-blue-200 hover:bg-white/10'
+              }`}
               style={{ fontFamily: 'Times New Roman, Times, serif' }}
             >
               {item.label}
