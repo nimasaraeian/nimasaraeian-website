@@ -184,8 +184,15 @@ function Dashboard({session}:{session:Session}){
   const isLoan=selP?IS_LOAN_PROJECT(selP.project.title):false
 
   const loadProjects=async()=>{
-    const{data}=await supabase.from('project_members').select('role,projects(id,title,description,color,owner_id,created_at)').eq('user_id',user.id)
-    if(data){const m=(data as any[]).map(d=>({role:d.role,project:d.projects})).filter(d=>d.project);setProjects(m);if(m.length>0&&!selId)setSelId(m[0].project.id)}
+    const{data:{session}}=await supabase.auth.getSession()
+    const token=session?.access_token
+    if(!token)return
+    const res=await fetch('/api/workspace/projects',{headers:{Authorization:`Bearer ${token}`}})
+    const data=await res.json()
+    if(Array.isArray(data)&&data.length>0){
+      const m=(data as any[]).map(d=>({role:d.role,project:d.projects})).filter(d=>d.project)
+      setProjects(m);if(m.length>0&&!selId)setSelId(m[0].project.id)
+    }
   }
   useEffect(()=>{loadProjects()},[])
   useEffect(()=>{if(!selId)return;setView('dashboard');setSelNote(null);setActiveSection(null);loadNotes();loadFiles();loadMembers();if(isLoan)loadAnswers()},[selId])
