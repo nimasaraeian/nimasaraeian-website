@@ -329,11 +329,13 @@ function Dashboard({session}:{session:Session}) {
                 </div>
                 {/* Tabs */}
                 <div style={{display:'flex',gap:'.25rem',borderBottom:'none',marginTop:'.5rem'}}>
-                  {([['notes','📝 یادداشت‌ها'],['files','📎 فایل‌ها'],isOwner?['members','👥 اعضا']:null] as ([string,string]|null)[]).filter(Boolean).map(([id,label])=>(
+                  {(['notes','files',...(isOwner?['members']:[])]).map(id=>{
+                    const labels:Record<string,string>={notes:'📝 یادداشت‌ها',files:'📎 فایل‌ها',members:'👥 اعضا'}
+                    return(
                     <button key={id} onClick={()=>setActiveTab(id as typeof activeTab)} style={{padding:'.6rem 1.2rem',border:'none',background:activeTab===id?'rgba(255,255,255,.18)':'transparent',color:activeTab===id?'#fff':'rgba(255,255,255,.55)',borderRadius:'8px 8px 0 0',cursor:'pointer',fontFamily:'Vazirmatn,sans-serif',fontSize:'.82rem',fontWeight:activeTab===id?700:500,transition:'all .2s',backdropFilter:activeTab===id?'blur(8px)':'none'}}>
-                      {label}
+                      {labels[id]}
                     </button>
-                  ))}
+                  )})}
                 </div>
               </div>
             </div>
