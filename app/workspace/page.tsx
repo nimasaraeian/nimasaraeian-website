@@ -230,8 +230,16 @@ function Dashboard({session}:{session:Session}){
   // ── Answer update ──
   const updateAnswer=async(qId:string,field:'answer'|'status'|'note',value:string)=>{
     setAnswers(prev=>{const cur=prev[qId]||{question_id:qId,answer:'',status:'unanswered',note:''};return{...prev,[qId]:{...cur,[field]:value}}})
-    const cur=answers[qId]||{answer:'',status:'unanswered',note:''}
-    await supabase.from('questionnaire_answers').upsert({project_id:selId!,question_id:qId,...cur,[field]:value,updated_by:user.id,updated_at:new Date().toISOString()},{onConflict:'project_id,question_id'})
+    const cur=answers[qId]||{answer:'',status:'unanswered' as QStatus,note:''}
+    await supabase.from('questionnaire_answers').upsert({
+      project_id:selId!,
+      question_id:qId,
+      answer:field==='answer'?value:(cur.answer||''),
+      status:field==='status'?value:(cur.status||'unanswered'),
+      note:field==='note'?value:(cur.note||''),
+      updated_by:user.id,
+      updated_at:new Date().toISOString()
+    },{onConflict:'project_id,question_id'})
   }
 
   // ── Notes ──
