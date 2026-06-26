@@ -39,8 +39,8 @@ export default function FilesPanel({ project, files, uploading, isOwner, onUploa
 
       {files.length === 0 ? (
         <label className="ws-card" style={{ display: 'block', padding: '60px', textAlign: 'center', cursor: 'pointer', transition: 'border-color .2s' }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--ws-gold-border)')}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--ws-border)')}
+          onMouseEnter={(e: React.MouseEvent<HTMLLabelElement>) => (e.currentTarget.style.borderColor = 'var(--ws-gold-border)')}
+          onMouseLeave={(e: React.MouseEvent<HTMLLabelElement>) => (e.currentTarget.style.borderColor = 'var(--ws-border)')}
         >
           <div style={{ fontSize: '40px', marginBottom: '16px', opacity: 0.3 }}>📁</div>
           <p style={{ color: 'var(--ws-text-muted)', marginBottom: '8px' }}>هنوز فایلی آپلود نشده</p>
@@ -65,8 +65,8 @@ export default function FilesPanel({ project, files, uploading, isOwner, onUploa
                 </button>
                 {isOwner && (
                   <button onClick={e => onDelete(f, e)} style={{ background: 'none', border: 'none', color: 'var(--ws-text-dim)', cursor: 'pointer', padding: '6px', borderRadius: '6px', transition: 'all .2s' }}
-                    onMouseEnter={e => { e.currentTarget.style.color = 'var(--ws-danger)'; e.currentTarget.style.background = 'rgba(248,113,113,0.08)' }}
-                    onMouseLeave={e => { e.currentTarget.style.color = 'var(--ws-text-dim)'; e.currentTarget.style.background = 'none' }}
+                    onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.color = 'var(--ws-danger)'; e.currentTarget.style.background = 'rgba(248,113,113,0.08)' }}
+                    onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.color = 'var(--ws-text-dim)'; e.currentTarget.style.background = 'none' }}
                   >
                     <Trash2 size={15} />
                   </button>

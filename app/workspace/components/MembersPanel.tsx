@@ -25,7 +25,6 @@ export default function MembersPanel({ project, members, session, inviteEmail, i
         <h1 style={{ color: 'var(--ws-text)', fontSize: '22px', fontWeight: 700 }}>{DISPLAY_NAME(project.title)}</h1>
       </div>
 
-      {/* Invite card */}
       <div className="ws-card" style={{ padding: '24px 28px', marginBottom: '28px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', direction: 'rtl' }}>
           <UserPlus size={16} style={{ color: 'var(--ws-gold)' }} />
@@ -44,31 +43,26 @@ export default function MembersPanel({ project, members, session, inviteEmail, i
         )}
       </div>
 
-      {/* Members list */}
       <div style={{ color: 'var(--ws-text-muted)', fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '12px', fontFamily: 'Times New Roman, serif', direction: 'rtl' }}>
         اعضای فعلی ({members.length})
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         {members.map((m) => (
           <div key={m.id} className="ws-card" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <div className="ws-avatar">
-              {(m.email || '?')[0].toUpperCase()}
-            </div>
+            <div className="ws-avatar">{(m.email || '?')[0].toUpperCase()}</div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <p style={{ color: 'var(--ws-text)', fontSize: '13px', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} dir="ltr">
                 {m.email || m.user_id.slice(0, 12) + '...'}
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '3px', direction: 'rtl' }}>
                 {m.role === 'owner' && <Crown size={11} style={{ color: 'var(--ws-gold)' }} />}
-                <p style={{ color: 'var(--ws-text-muted)', fontSize: '11px' }}>
-                  {m.role === 'owner' ? 'مالک' : 'عضو'}
-                </p>
+                <p style={{ color: 'var(--ws-text-muted)', fontSize: '11px' }}>{m.role === 'owner' ? 'مالک' : 'عضو'}</p>
               </div>
             </div>
             {m.user_id !== session.user.id && (
               <button onClick={() => onRemoveMember(m.id)} style={{ background: 'none', border: 'none', color: 'var(--ws-text-dim)', cursor: 'pointer', padding: '6px', borderRadius: '6px', transition: 'all .2s' }}
-                onMouseEnter={e => { e.currentTarget.style.color = 'var(--ws-danger)'; e.currentTarget.style.background = 'rgba(248,113,113,0.08)' }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'var(--ws-text-dim)'; e.currentTarget.style.background = 'none' }}
+                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.color = 'var(--ws-danger)'; e.currentTarget.style.background = 'rgba(248,113,113,0.08)' }}
+                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.color = 'var(--ws-text-dim)'; e.currentTarget.style.background = 'none' }}
               >
                 <X size={15} />
               </button>

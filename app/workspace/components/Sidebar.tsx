@@ -48,8 +48,8 @@ export default function Sidebar({ session, projects, selId, view, isLoan, isOwne
       {/* Header */}
       <div style={{ padding: '20px 16px 16px', borderBottom: '1px solid var(--ws-border)' }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--ws-text-muted)', fontSize: '12px', textDecoration: 'none', marginBottom: '16px', transition: 'color .2s', fontFamily: 'Times New Roman, serif', letterSpacing: '0.05em' }}
-          onMouseEnter={e => (e.currentTarget.style.color = 'var(--ws-text)')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'var(--ws-text-muted)')}
+          onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.color = 'var(--ws-text)')}
+          onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.color = 'var(--ws-text-muted)')}
         >
           <ArrowLeft size={13} />
           nimasaraeian.com
@@ -94,8 +94,8 @@ export default function Sidebar({ session, projects, selId, view, isLoan, isOwne
             </div>
           ) : (
             <button onClick={onToggleNewProject} style={{ width: '100%', marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '9px', borderRadius: '10px', border: '1px dashed var(--ws-border)', background: 'none', color: 'var(--ws-text-dim)', fontSize: '12px', cursor: 'pointer', transition: 'all .2s', fontFamily: 'inherit' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ws-gold-border)'; e.currentTarget.style.color = 'var(--ws-gold)' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--ws-border)'; e.currentTarget.style.color = 'var(--ws-text-dim)' }}
+              onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.borderColor = 'var(--ws-gold-border)'; e.currentTarget.style.color = 'var(--ws-gold)' }}
+              onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.borderColor = 'var(--ws-border)'; e.currentTarget.style.color = 'var(--ws-text-dim)' }}
             >
               <Plus size={13} />پروژه جدید
             </button>
@@ -121,8 +121,8 @@ export default function Sidebar({ session, projects, selId, view, isLoan, isOwne
       {/* Sign out */}
       <div style={{ padding: '12px 16px', borderTop: '1px solid var(--ws-border)' }}>
         <button onClick={onSignOut} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '9px', background: 'none', border: 'none', color: 'var(--ws-text-muted)', fontSize: '12px', cursor: 'pointer', borderRadius: '8px', fontFamily: 'inherit', transition: 'all .2s', direction: 'rtl' }}
-          onMouseEnter={e => { e.currentTarget.style.color = 'var(--ws-danger)'; e.currentTarget.style.background = 'rgba(248,113,113,0.06)' }}
-          onMouseLeave={e => { e.currentTarget.style.color = 'var(--ws-text-muted)'; e.currentTarget.style.background = 'none' }}
+          onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.color = 'var(--ws-danger)'; e.currentTarget.style.background = 'rgba(248,113,113,0.06)' }}
+          onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.color = 'var(--ws-text-muted)'; e.currentTarget.style.background = 'none' }}
         >
           <LogOut size={13} />خروج
         </button>
