@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { Plus, Trash2, ArrowRight, Eye, Edit3 } from 'lucide-react'
 import { useState } from 'react'
@@ -22,32 +22,80 @@ type Props = {
   onContentChange: (v: string) => void
 }
 
-export default function NotesPanel({ project, notes, selNote, noteTitle, noteContent, saving, onCreate, onOpen, onDelete, onCloseEditor, onTitleChange, onContentChange }: Props) {
+export default function NotesPanel({
+  project, notes, selNote, noteTitle, noteContent, saving,
+  onCreate, onOpen, onDelete, onCloseEditor, onTitleChange, onContentChange,
+}: Props) {
   const [mode, setMode] = useState<'edit' | 'preview'>('preview')
 
+  /* ── Note editor view ───────────────────── */
   if (selNote) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }} className="ws-animate-in">
+
         {/* Toolbar */}
-        <div style={{ height: '52px', borderBottom: '1px solid var(--ws-border)', display: 'flex', alignItems: 'center', padding: '0 24px', gap: '12px', flexShrink: 0, background: 'var(--ws-sidebar)' }}>
-          <button onClick={onCloseEditor} style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--ws-text-muted)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', fontFamily: 'inherit', transition: 'color .2s' }}
+        <div style={{
+          height: '52px', borderBottom: '1px solid var(--ws-border)',
+          display: 'flex', alignItems: 'center',
+          padding: '0 24px', gap: '12px', flexShrink: 0,
+          background: 'var(--ws-sidebar)',
+        }}>
+          <button
+            onClick={onCloseEditor}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              color: 'var(--ws-text-muted)', background: 'none', border: 'none',
+              cursor: 'pointer', fontSize: '13px', fontFamily: 'inherit', transition: 'color .2s',
+            }}
             onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.color = 'var(--ws-text)')}
             onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.color = 'var(--ws-text-muted)')}
           >
             <ArrowRight size={15} />
-            ط¨ط§ط²ع¯ط´طھ
+            بازگشت
           </button>
+
           <div style={{ flex: 1 }} />
+
           {/* Mode toggle */}
-          <div style={{ display: 'flex', background: 'var(--ws-card)', border: '1px solid var(--ws-border)', borderRadius: '8px', padding: '3px', gap: '2px' }}>
-            <button onClick={() => setMode('preview')} style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '5px 10px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontSize: '12px', fontFamily: 'inherit', background: mode === 'preview' ? 'var(--ws-border-light)' : 'none', color: mode === 'preview' ? 'var(--ws-text)' : 'var(--ws-text-muted)', transition: 'all .15s' }}>
-              <Eye size={13} />ظ†ظ…ط§غŒط´
+          <div style={{
+            display: 'flex', background: 'var(--ws-card)',
+            border: '1px solid var(--ws-border)', borderRadius: '8px',
+            padding: '3px', gap: '2px',
+          }}>
+            <button
+              onClick={() => setMode('preview')}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '5px',
+                padding: '5px 10px', borderRadius: '6px', border: 'none',
+                cursor: 'pointer', fontSize: '12px', fontFamily: 'inherit',
+                background: mode === 'preview' ? 'var(--ws-border-light)' : 'none',
+                color: mode === 'preview' ? 'var(--ws-text)' : 'var(--ws-text-muted)',
+                transition: 'all .15s',
+              }}
+            >
+              <Eye size={13} /> نمایش
             </button>
-            <button onClick={() => setMode('edit')} style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '5px 10px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontSize: '12px', fontFamily: 'inherit', background: mode === 'edit' ? 'var(--ws-border-light)' : 'none', color: mode === 'edit' ? 'var(--ws-text)' : 'var(--ws-text-muted)', transition: 'all .15s' }}>
-              <Edit3 size={13} />ظˆغŒط±ط§غŒط´
+            <button
+              onClick={() => setMode('edit')}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '5px',
+                padding: '5px 10px', borderRadius: '6px', border: 'none',
+                cursor: 'pointer', fontSize: '12px', fontFamily: 'inherit',
+                background: mode === 'edit' ? 'var(--ws-border-light)' : 'none',
+                color: mode === 'edit' ? 'var(--ws-text)' : 'var(--ws-text-muted)',
+                transition: 'all .15s',
+              }}
+            >
+              <Edit3 size={13} /> ویرایش
             </button>
           </div>
-          <span style={{ fontSize: '11px', color: saving ? 'var(--ws-gold)' : 'var(--ws-text-dim)' }}>{saving ? 'ط¯ط± ط­ط§ظ„ ط°ط®غŒط±ظ‡...' : 'âœ“ ط°ط®غŒط±ظ‡ ط´ط¯'}</span>
+
+          <span style={{
+            fontSize: '11px',
+            color: saving ? 'var(--ws-gold)' : 'var(--ws-text-dim)',
+          }}>
+            {saving ? 'در حال ذخیره...' : '✓ ذخیره شد'}
+          </span>
         </div>
 
         {/* Content */}
@@ -57,25 +105,43 @@ export default function NotesPanel({ project, notes, selNote, noteTitle, noteCon
               <input
                 value={noteTitle}
                 onChange={e => onTitleChange(e.target.value)}
-                style={{ width: '100%', border: 'none', outline: 'none', fontSize: '24px', fontWeight: 700, color: 'var(--ws-text)', background: 'transparent', fontFamily: 'inherit', direction: 'rtl', marginBottom: '8px', boxSizing: 'border-box' }}
-                placeholder="ط¹ظ†ظˆط§ظ† غŒط§ط¯ط¯ط§ط´طھ"
+                placeholder="عنوان یادداشت"
+                style={{
+                  width: '100%', border: 'none', outline: 'none',
+                  fontSize: '24px', fontWeight: 700, color: 'var(--ws-text)',
+                  background: 'transparent', fontFamily: 'inherit',
+                  direction: 'rtl', marginBottom: '8px', boxSizing: 'border-box',
+                }}
               />
               <textarea
                 value={noteContent}
                 onChange={e => onContentChange(e.target.value)}
-                style={{ width: '100%', minHeight: '60vh', border: 'none', outline: 'none', resize: 'none', fontSize: '14px', lineHeight: 2, color: 'var(--ws-text-muted)', background: 'transparent', fontFamily: 'inherit', direction: 'rtl', boxSizing: 'border-box' }}
-                placeholder="ط´ط±ظˆط¹ ط¨ظ‡ ظ†ظˆط´طھظ†... (ط§ط² Markdown ظ¾ط´طھغŒط¨ط§ظ†غŒ ظ…غŒâ€Œط´ظˆط¯)"
+                placeholder="شروع به نوشتن... (از Markdown پشتیبانی می‌شود)"
+                style={{
+                  width: '100%', minHeight: '60vh', border: 'none', outline: 'none',
+                  resize: 'none', fontSize: '14px', lineHeight: 2,
+                  color: 'var(--ws-text-muted)', background: 'transparent',
+                  fontFamily: 'inherit', direction: 'rtl', boxSizing: 'border-box',
+                }}
               />
             </div>
           ) : (
             <div style={{ padding: '32px 48px', maxWidth: '800px', margin: '0 auto' }}>
-              <h1 style={{ color: 'var(--ws-text)', fontSize: '24px', fontWeight: 700, marginBottom: '6px', direction: 'rtl', textAlign: 'right' }}>
+              <h1 style={{
+                color: 'var(--ws-text)', fontSize: '24px', fontWeight: 700,
+                marginBottom: '6px', direction: 'rtl', textAlign: 'right',
+              }}>
                 {noteTitle || selNote.title}
               </h1>
-              <p style={{ color: 'var(--ws-text-dim)', fontSize: '11px', marginBottom: '28px', direction: 'rtl', textAlign: 'right' }}>{fmtDate(selNote.updated_at)}</p>
+              <p style={{
+                color: 'var(--ws-text-dim)', fontSize: '11px',
+                marginBottom: '28px', direction: 'rtl', textAlign: 'right',
+              }}>
+                {fmtDate(selNote.updated_at)}
+              </p>
               <div className="ws-markdown">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {noteContent || '*ط§غŒظ† غŒط§ط¯ط¯ط§ط´طھ ط®ط§ظ„غŒ ط§ط³طھ*'}
+                  {noteContent || '*این یادداشت خالی است*'}
                 </ReactMarkdown>
               </div>
             </div>
@@ -85,43 +151,87 @@ export default function NotesPanel({ project, notes, selNote, noteTitle, noteCon
     )
   }
 
+  /* ── Notes list view ────────────────────── */
   return (
-    <div className="ws-animate-in" style={{ padding: '40px 44px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px', direction: 'rtl' }}>
+    <div className="ws-animate-in ws-mobile-padded" style={{ padding: '32px 36px' }}>
+      <div style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+        marginBottom: '28px', direction: 'rtl',
+      }}>
         <div>
-          <div style={{ color: 'var(--ws-text-muted)', fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '8px', fontFamily: 'Times New Roman, serif' }}>غŒط§ط¯ط¯ط§ط´طھâ€Œظ‡ط§</div>
-          <h1 style={{ color: 'var(--ws-text)', fontSize: '22px', fontWeight: 700 }}>{DISPLAY_NAME(project.title)}</h1>
+          <div style={{
+            color: 'var(--ws-text-muted)', fontSize: '11px',
+            letterSpacing: '0.18em', textTransform: 'uppercase',
+            marginBottom: '6px', fontFamily: 'Georgia, serif',
+          }}>
+            یادداشت‌ها
+          </div>
+          <h1 style={{ color: 'var(--ws-text)', fontSize: '22px', fontWeight: 700 }}>
+            {DISPLAY_NAME(project.title)}
+          </h1>
         </div>
         <button onClick={onCreate} className="ws-btn ws-btn-primary">
-          <Plus size={15} />غŒط§ط¯ط¯ط§ط´طھ ط¬ط¯غŒط¯
+          <Plus size={15} /> یادداشت جدید
         </button>
       </div>
 
       {notes.length === 0 ? (
         <div className="ws-card" style={{ padding: '60px', textAlign: 'center' }}>
-          <div style={{ fontSize: '40px', marginBottom: '16px', opacity: 0.3 }}>ًں“‌</div>
-          <p style={{ color: 'var(--ws-text-muted)', marginBottom: '20px' }}>ظ‡ظ†ظˆط² غŒط§ط¯ط¯ط§ط´طھغŒ ط«ط¨طھ ظ†ط´ط¯ظ‡</p>
-          <button onClick={onCreate} className="ws-btn ws-btn-primary">ط§ظˆظ„غŒظ† غŒط§ط¯ط¯ط§ط´طھ ط±ط§ ط¨ط³ط§ط²غŒط¯</button>
+          <div style={{ fontSize: '40px', marginBottom: '16px', opacity: 0.3 }}>📝</div>
+          <p style={{ color: 'var(--ws-text-muted)', marginBottom: '20px' }}>
+            هنوز یادداشتی ثبت نشده
+          </p>
+          <button onClick={onCreate} className="ws-btn ws-btn-primary">
+            اولین یادداشت را بسازید
+          </button>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '12px' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+          gap: '12px',
+        }}>
           {notes.map((n) => (
-            <div key={n.id} onClick={() => { onOpen(n); setMode('preview') }} className="ws-note-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px', direction: 'rtl' }}>
-                <h3 style={{ color: 'var(--ws-text)', fontWeight: 600, fontSize: '14px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{n.title}</h3>
+            <div
+              key={n.id}
+              onClick={() => { onOpen(n); setMode('preview') }}
+              className="ws-note-card"
+            >
+              <div style={{
+                display: 'flex', justifyContent: 'space-between',
+                alignItems: 'flex-start', marginBottom: '10px', direction: 'rtl',
+              }}>
+                <h3 style={{
+                  color: 'var(--ws-text)', fontWeight: 600, fontSize: '14px',
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
+                }}>
+                  {n.title}
+                </h3>
                 <button
                   onClick={e => onDelete(n.id, e)}
-                  style={{ background: 'none', border: 'none', color: 'var(--ws-text-dim)', cursor: 'pointer', flexShrink: 0, marginRight: '8px', padding: '2px', borderRadius: '4px', transition: 'color .2s' }}
+                  style={{
+                    background: 'none', border: 'none', color: 'var(--ws-text-dim)',
+                    cursor: 'pointer', flexShrink: 0, marginRight: '8px',
+                    padding: '2px', borderRadius: '4px', transition: 'color .2s',
+                  }}
                   onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.color = 'var(--ws-danger)')}
                   onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => (e.currentTarget.style.color = 'var(--ws-text-dim)')}
                 >
                   <Trash2 size={13} />
                 </button>
               </div>
-              <p style={{ color: 'var(--ws-text-muted)', fontSize: '12px', lineHeight: 1.7, marginBottom: '14px', display: '-webkit-box', overflow: 'hidden', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', direction: 'rtl' }}>
-                {n.content?.replace(/[#*`|_>]/g, '').trim() || 'ط®ط§ظ„غŒ'}
+              <p style={{
+                color: 'var(--ws-text-muted)', fontSize: '12px', lineHeight: 1.7,
+                marginBottom: '14px',
+                display: '-webkit-box', overflow: 'hidden',
+                WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
+                direction: 'rtl',
+              }}>
+                {n.content?.replace(/[#*`|_>]/g, '').trim() || 'خالی'}
               </p>
-              <p style={{ color: 'var(--ws-text-dim)', fontSize: '11px', direction: 'rtl' }}>{fmtDate(n.updated_at)}</p>
+              <p style={{ color: 'var(--ws-text-dim)', fontSize: '11px', direction: 'rtl' }}>
+                {fmtDate(n.updated_at)}
+              </p>
             </div>
           ))}
         </div>
@@ -129,4 +239,3 @@ export default function NotesPanel({ project, notes, selNote, noteTitle, noteCon
     </div>
   )
 }
-

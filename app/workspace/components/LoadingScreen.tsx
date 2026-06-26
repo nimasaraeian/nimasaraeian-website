@@ -2,28 +2,23 @@
 
 export default function LoadingScreen() {
   return (
-    <div className="flex h-full bg-[var(--ws-surface)]">
-      {/* Sidebar skeleton */}
-      <div className="w-[280px] flex-shrink-0 bg-[var(--ws-navy)] p-5 space-y-4 hidden md:block">
-        <div className="ws-skeleton h-12 w-full opacity-20" />
-        <div className="ws-skeleton h-8 w-3/4 opacity-20" />
-        <div className="space-y-2 pt-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="ws-skeleton h-10 w-full opacity-20" />
-          ))}
-        </div>
-      </div>
-
-      {/* Main skeleton */}
-      <div className="flex-1 p-8 space-y-6">
-        <div className="ws-skeleton h-8 w-48" />
-        <div className="ws-skeleton h-32 w-full rounded-2xl" />
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="ws-skeleton h-28 rounded-2xl" />
-          ))}
-        </div>
-      </div>
+    <div style={{
+      display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center',
+      background: 'var(--ws-bg)',
+      flexDirection: 'column', gap: '16px',
+    }}>
+      {/* Spinner */}
+      <div style={{
+        width: '36px', height: '36px',
+        border: '3px solid var(--ws-border)',
+        borderTop: '3px solid var(--ws-gold)',
+        borderRadius: '50%',
+        animation: 'ws-spin 0.8s linear infinite',
+      }} />
+      <span style={{ color: 'var(--ws-text-muted)', fontSize: '13px' }}>
+        در حال بارگذاری...
+      </span>
+      <style>{`@keyframes ws-spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   )
 }

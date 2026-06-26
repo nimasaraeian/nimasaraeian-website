@@ -9,6 +9,7 @@ import {
   IS_LOAN,
   AUTOSAVE_MS,
   PROJECT_COLORS,
+  DISPLAY_NAME,
 } from '../lib'
 import type {
   ProjectWithRole,
@@ -16,17 +17,21 @@ import type {
   FileRecord,
   Member,
   QAnswer,
+  Message,
   View,
 } from '../types'
 import Sidebar from './Sidebar'
+import IconNav from './IconNav'
 import OverviewPanel from './OverviewPanel'
 import NotesPanel from './NotesPanel'
 import FilesPanel from './FilesPanel'
 import MembersPanel from './MembersPanel'
+import ChatPanel from './ChatPanel'
 import QuestionnairePanel from './QuestionnairePanel'
 import QuestionDetailPanel from './QuestionDetailPanel'
 import EmptyProjectsWelcome from './EmptyProjectsWelcome'
 import LoadingScreen from './LoadingScreen'
+import { LayoutDashboard, MessageSquare, FileText, FolderOpen, ClipboardList } from 'lucide-react'
 
 export default function WorkspaceApp({ session }: { session: Session }) {
   const user = session.user
@@ -40,6 +45,8 @@ export default function WorkspaceApp({ session }: { session: Session }) {
   const [files, setFiles] = useState<FileRecord[]>([])
   const [members, setMembers] = useState<Member[]>([])
   const [answers, setAnswers] = useState<Record<string, QAnswer>>({})
+  const [messages, setMessages] = useState<Message[]>([])
+  const [sending, setSending] = useState(false)
   const [activeSection, setActiveSection] = useState<number | null>(null)
   const [statusFilter, setStatusFilter] = useState<QStatus | ''>('')
   const [search, setSearch] = useState('')
@@ -125,16 +132,48 @@ export default function WorkspaceApp({ session }: { session: Session }) {
     }
   }, [selId])
 
+  const loadMessages = useCallback(async () => {
+    if (!selId) return
+    const { data } = await supabase
+      .from('messages')
+      .select('*')
+      .eq('project_id', selId)
+      .order('created_at', { ascending: true })
+      .limit(200)
+    if (data) setMessages(data)
+  }, [selId])
+
   useEffect(() => {
     if (!selId) return
     setView('overview')
     setSelNote(null)
     setActiveSection(null)
+    setMessages([])
     loadNotes()
     loadFiles()
     loadMembers()
+    loadMessages()
     if (isLoan) loadAnswers()
-  }, [selId, isLoan, loadNotes, loadFiles, loadMembers, loadAnswers])
+  }, [selId, isLoan, loadNotes, loadFiles, loadMembers, loadAnswers, loadMessages])
+
+  // Real-time: receive new messages live
+  useEffect(() => {
+    if (!selId) return
+    const channel = supabase
+      .channel(`messages-${selId}`)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'messages', filter: `project_id=eq.${selId}` },
+        (payload) => {
+          setMessages((prev) => {
+            if (prev.some((m) => m.id === payload.new.id)) return prev
+            return [...prev, payload.new as Message]
+          })
+        }
+      )
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [selId])
 
   const selectProject = (id: string) => {
     setSelId(id)
@@ -305,31 +344,84 @@ export default function WorkspaceApp({ session }: { session: Session }) {
     setInviting(false)
   }
 
+  const sendMessage = async (content: string) => {
+    if (!selId) return
+    setSending(true)
+    const { data } = await supabase
+      .from('messages')
+      .insert({ project_id: selId, sender_id: user.id, content })
+      .select()
+      .single()
+    if (data) setMessages((prev) => (prev.some((m) => m.id === data.id) ? prev : [...prev, data]))
+    setSending(false)
+  }
+
   if (projectsLoading) return <LoadingScreen />
 
   const hasProjects = projects.length > 0 && selId && selP
 
-  return (
-    <div className="flex h-full min-h-0 flex-col md:flex-row">
-      <Sidebar
-        session={session}
-        projects={projects}
-        selId={selId}
-        view={view}
-        isLoan={isLoan}
-        isOwner={!!isOwner}
-        showNewProject={showNewProject}
-        newTitle={newTitle}
-        creating={creating}
-        onSelectProject={selectProject}
-        onSetView={setNavView}
-        onSignOut={() => supabase.auth.signOut()}
-        onToggleNewProject={() => setShowNewProject((v) => !v)}
-        onNewTitleChange={setNewTitle}
-        onCreateProject={createProject}
-      />
+  const userInitial = (user.email?.[0] || 'N').toUpperCase()
 
-      <main className="flex-1 min-h-0 overflow-hidden bg-[var(--ws-bg)] flex flex-col">
+  const viewLabels: Record<string, string> = {
+    overview: 'نمای کلی', chat: 'گفتگو', notes: 'یادداشت‌ها',
+    files: 'فایل‌ها', members: 'اعضا', questionnaire: 'پرسش‌نامه', question: 'پرسش‌نامه',
+  }
+  const mobileNavItems = [
+    { id: 'overview' as View,       label: 'خانه',    Icon: LayoutDashboard, color: '#d4a843' },
+    { id: 'chat' as View,           label: 'گفتگو',   Icon: MessageSquare,   color: '#0d9488' },
+    { id: 'notes' as View,          label: 'یادداشت', Icon: FileText,        color: '#3b82f6' },
+    { id: 'files' as View,          label: 'فایل',    Icon: FolderOpen,      color: '#8b5cf6' },
+    ...(isLoan ? [{ id: 'questionnaire' as View, label: 'پرسش‌نامه', Icon: ClipboardList, color: '#d4a843' }] : []),
+  ]
+  const mobileActiveView = view === 'question' ? 'questionnaire' : view
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, overflow: 'hidden' }}>
+
+      {/* ── Mobile sticky header ────────────────── */}
+      <div className="ws-mobile-header">
+        <div style={{ minWidth: 0, flex: 1 }}>
+          {projects.length > 1 ? (
+            <select
+              value={selId || ''}
+              onChange={(e) => selectProject(e.target.value)}
+              style={{
+                fontFamily: 'Vazirmatn, inherit', fontSize: '15px', fontWeight: 700,
+                color: 'var(--ws-text)', background: 'transparent',
+                border: 'none', outline: 'none', cursor: 'pointer',
+                direction: 'rtl', maxWidth: '200px', padding: 0,
+              }}
+            >
+              {projects.map(({ project }) => (
+                <option key={project.id} value={project.id}>{DISPLAY_NAME(project.title)}</option>
+              ))}
+            </select>
+          ) : (
+            <div className="ws-mobile-header-title">
+              {selP ? DISPLAY_NAME(selP.project.title) : 'Workspace'}
+            </div>
+          )}
+          {selP && <div className="ws-mobile-header-sub">{viewLabels[view] || ''}</div>}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+          {selP && (
+            <div style={{ width: '9px', height: '9px', borderRadius: '50%', background: selP.project.color }} />
+          )}
+          <div style={{
+            width: '34px', height: '34px', borderRadius: '50%', flexShrink: 0,
+            background: 'linear-gradient(135deg, #fef3c7, #fde68a)',
+            border: '1.5px solid #fbbf24',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#92400e', fontWeight: 800, fontSize: '14px',
+          }}>
+            {userInitial}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Three-column (desktop) / Full-screen (mobile) ── */}
+      <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
+        <main className="flex-1 min-h-0 overflow-hidden bg-[var(--ws-bg)] flex flex-col ws-mobile-padded">
         {!hasProjects ? (
           <EmptyProjectsWelcome
             showNewProject={showNewProject}
@@ -346,6 +438,7 @@ export default function WorkspaceApp({ session }: { session: Session }) {
               notes={notes}
               files={files}
               members={members}
+              messages={messages}
               isLoan={isLoan}
               totalQ={totalQ}
               completedQ={completedQ}
@@ -368,6 +461,17 @@ export default function WorkspaceApp({ session }: { session: Session }) {
               onCloseEditor={() => setSelNote(null)}
               onTitleChange={(v) => handleNoteChange('title', v)}
               onContentChange={(v) => handleNoteChange('content', v)}
+            />
+          </div>
+        ) : view === 'chat' ? (
+          <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+            <ChatPanel
+              project={selP.project}
+              messages={messages}
+              members={members}
+              userId={user.id}
+              sending={sending}
+              onSend={sendMessage}
             />
           </div>
         ) : view === 'files' ? (
@@ -438,6 +542,7 @@ export default function WorkspaceApp({ session }: { session: Session }) {
               notes={notes}
               files={files}
               members={members}
+              messages={messages}
               isLoan={isLoan}
               totalQ={totalQ}
               completedQ={completedQ}
@@ -446,7 +551,50 @@ export default function WorkspaceApp({ session }: { session: Session }) {
             />
           </div>
         )}
-      </main>
+        </main>
+
+        {/* Desktop sidebar + icon nav — hidden on mobile */}
+        <div className="ws-desktop-only" style={{ display: 'flex' }}>
+          <Sidebar
+            session={session}
+            projects={projects}
+            selId={selId}
+            showNewProject={showNewProject}
+            newTitle={newTitle}
+            creating={creating}
+            onSelectProject={selectProject}
+            onToggleNewProject={() => setShowNewProject((v) => !v)}
+            onNewTitleChange={setNewTitle}
+            onCreateProject={createProject}
+          />
+
+          <IconNav
+            view={view}
+            isLoan={isLoan}
+            isOwner={!!isOwner}
+            userInitial={userInitial}
+            onSetView={setNavView}
+            onSignOut={() => supabase.auth.signOut()}
+          />
+        </div>
+      </div>
+
+      {/* ── Mobile bottom navigation ────────────── */}
+      {hasProjects && (
+        <nav className="ws-bottom-nav">
+          {mobileNavItems.map(({ id, label, Icon, color }) => (
+            <button
+              key={id}
+              className={`ws-bottom-nav-item${mobileActiveView === id ? ' active' : ''}`}
+              onClick={() => setNavView(id)}
+              style={mobileActiveView === id ? { color } : undefined}
+            >
+              <Icon size={21} />
+              <span>{label}</span>
+            </button>
+          ))}
+        </nav>
+      )}
     </div>
   )
 }

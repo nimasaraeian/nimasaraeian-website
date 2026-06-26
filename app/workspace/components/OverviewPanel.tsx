@@ -1,146 +1,356 @@
 'use client'
 
-import { FileText, FolderOpen, Users, ClipboardList, TrendingUp, ChevronLeft } from 'lucide-react'
+import { FileText, FolderOpen, ClipboardList, MessageSquare, ArrowLeft, TrendingUp } from 'lucide-react'
 import { DISPLAY_NAME } from '../lib'
-import type { Project, Member, Note, FileRecord, View } from '../types'
+import type { Project, Member, Note, FileRecord, Message, View } from '../types'
 
 type Props = {
   project: Project
   notes: Note[]
   files: FileRecord[]
   members: Member[]
+  messages: Message[]
   isLoan: boolean
   totalQ: number
   completedQ: number
   pct: number
-  onNavigate: (view: Extract<View, 'notes' | 'files' | 'questionnaire'>) => void
+  onNavigate: (view: View) => void
 }
 
-export default function OverviewPanel({ project, notes, files, members, isLoan, totalQ, completedQ, pct, onNavigate }: Props) {
-  const stats = [
-    {
-      label: 'یادداشت', value: notes.length, icon: <FileText size={18} />,
-      color: '#60a5fa', glow: 'rgba(96,165,250,0.12)', view: 'notes' as const,
-    },
-    {
-      label: 'فایل', value: files.length, icon: <FolderOpen size={18} />,
-      color: '#a78bfa', glow: 'rgba(167,139,250,0.12)', view: 'files' as const,
-    },
-    {
-      label: 'اعضا', value: members.length, icon: <Users size={18} />,
-      color: '#34d399', glow: 'rgba(52,211,153,0.12)', view: undefined,
-    },
-    ...(isLoan ? [
-      {
-        label: 'سؤال', value: totalQ, icon: <ClipboardList size={18} />,
-        color: 'var(--ws-gold)', glow: 'var(--ws-gold-glow)', view: 'questionnaire' as const,
-      },
-      {
-        label: 'تکمیل‌شده', value: completedQ, icon: <TrendingUp size={18} />,
-        color: 'var(--ws-success)', glow: 'rgba(74,222,128,0.12)', view: 'questionnaire' as const,
-      },
-    ] : []),
-  ]
+/* ── SVG circular progress ─────────────────── */
+function CircleProgress({ pct, color }: { pct: number; color: string }) {
+  const r = 52, c = 2 * Math.PI * r
+  const offset = c - (pct / 100) * c
+  return (
+    <svg width="130" height="130" viewBox="0 0 130 130" style={{ transform: 'rotate(-90deg)' }}>
+      <circle cx="65" cy="65" r={r} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="10" />
+      <circle
+        cx="65" cy="65" r={r} fill="none"
+        stroke={color} strokeWidth="10"
+        strokeDasharray={c} strokeDashoffset={offset}
+        strokeLinecap="round"
+        style={{ transition: 'stroke-dashoffset 1s cubic-bezier(0.16,1,0.3,1)' }}
+      />
+    </svg>
+  )
+}
 
-  const actions = [
-    ...(isLoan ? [{
-      label: 'پرسش‌نامه راهبردی',
-      desc: 'پاسخ به ۸۹ سؤال پروژه و پیگیری پیشرفت',
-      view: 'questionnaire' as const,
-      icon: <ClipboardList size={22} />,
-      color: 'var(--ws-gold)',
-    }] : []),
-    {
-      label: 'یادداشت‌ها',
-      desc: 'مستندات، تحلیل‌ها و یادداشت‌های تیمی',
-      view: 'notes' as const,
-      icon: <FileText size={22} />,
-      color: '#60a5fa',
-    },
-    {
-      label: 'فایل‌ها و مدارک',
-      desc: 'پیوست‌ها، اسناد و مدارک پروژه',
-      view: 'files' as const,
-      icon: <FolderOpen size={22} />,
-      color: '#a78bfa',
-    },
-  ]
+const truncate = (s: string, n: number) => s.length > n ? s.slice(0, n) + '…' : s
+
+export default function OverviewPanel({
+  project, notes, files, members, messages,
+  isLoan, totalQ, completedQ, pct, onNavigate,
+}: Props) {
+
+  const memberMap: Record<string, string> = {}
+  members.forEach(m => { memberMap[m.user_id] = (m.email || '').split('@')[0] })
+
+  const recentNotes = [...notes].sort((a, b) =>
+    new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+  ).slice(0, 5)
+
+  const fmtDate = (iso: string) => {
+    const d = new Date(iso)
+    const now = new Date()
+    const diff = (now.getTime() - d.getTime()) / 1000
+    if (diff < 60)    return 'همین الان'
+    if (diff < 3600)  return `${Math.floor(diff/60)} دقیقه پیش`
+    if (diff < 86400) return `${Math.floor(diff/3600)} ساعت پیش`
+    return d.toLocaleDateString('fa-IR')
+  }
+
+  /* accent color safe for dark bg */
+  const accent = '#f5c842'
 
   return (
-    <div className="ws-animate-in" style={{ padding: '40px 44px', maxWidth: '900px' }}>
+    <div className="ws-animate-in" style={{ minHeight: '100%', background: 'var(--ws-bg)' }}>
 
-      {/* Hero */}
+      {/* ═══════════════════════════════════════
+          HERO — dark gradient
+      ═══════════════════════════════════════ */}
       <div style={{
-        background: `linear-gradient(135deg, ${project.color}14 0%, ${project.color}06 60%, transparent 100%)`,
-        border: `1px solid ${project.color}28`,
-        borderRadius: '20px', padding: '36px 40px', marginBottom: '32px',
+        background: `linear-gradient(135deg, #0d1526 0%, ${project.color}dd 100%)`,
+        padding: '36px 40px 40px',
         position: 'relative', overflow: 'hidden',
+        direction: 'rtl',
       }}>
-        <div style={{ position: 'absolute', top: -40, left: -40, width: 160, height: 160, borderRadius: '50%', background: project.color, opacity: 0.05, filter: 'blur(40px)', pointerEvents: 'none' }} />
-        <div style={{ position: 'relative' }}>
-          <div style={{ color: 'var(--ws-text-muted)', fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '10px', fontFamily: 'Times New Roman, serif' }}>پروژه فعال</div>
-          <h1 style={{ color: 'var(--ws-text)', fontSize: '28px', fontWeight: 700, marginBottom: '10px', lineHeight: 1.4, direction: 'rtl' }}>
-            {DISPLAY_NAME(project.title)}
-          </h1>
-          {project.description && (
-            <p style={{ color: 'var(--ws-text-muted)', fontSize: '14px', lineHeight: 1.8, direction: 'rtl' }}>{project.description}</p>
+        {/* bg glow */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          background: `radial-gradient(ellipse 70% 90% at 110% -20%, ${project.color}55 0%, transparent 70%)`,
+        }} />
+
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '32px', flexWrap: 'wrap' }}>
+
+          {/* Text */}
+          <div style={{ flex: 1, minWidth: 200 }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: '6px',
+              background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)',
+              borderRadius: '20px', padding: '4px 12px', marginBottom: '14px',
+            }}>
+              <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 8px #4ade80' }} />
+              <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: '11px', fontWeight: 500, letterSpacing: '0.06em' }}>
+                پروژه فعال
+              </span>
+            </div>
+
+            <h1 style={{
+              color: '#fff', fontSize: '28px', fontWeight: 800,
+              lineHeight: 1.25, marginBottom: '8px', letterSpacing: '-0.02em',
+            }}>
+              {DISPLAY_NAME(project.title)}
+            </h1>
+
+            {project.description && (
+              <p style={{
+                color: 'rgba(255,255,255,0.55)', fontSize: '14px', lineHeight: 1.7,
+                maxWidth: '480px', marginBottom: '24px',
+              }}>
+                {project.description}
+              </p>
+            )}
+
+            {/* Stat pills */}
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {[
+                { n: notes.length,    label: 'یادداشت', icon: '📝' },
+                { n: files.length,    label: 'فایل',    icon: '📎' },
+                { n: messages.length, label: 'پیام',    icon: '💬' },
+                { n: members.length,  label: 'عضو',     icon: '👤' },
+              ].map((s, i) => (
+                <div key={i} style={{
+                  background: 'rgba(255,255,255,0.1)',
+                  border: '1px solid rgba(255,255,255,0.14)',
+                  borderRadius: '10px', padding: '8px 14px',
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                }}>
+                  <span style={{ fontSize: '13px' }}>{s.icon}</span>
+                  <span style={{ color: '#fff', fontWeight: 700, fontSize: '18px', lineHeight: 1 }}>{s.n}</span>
+                  <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px' }}>{s.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Circular progress (loan only) */}
+          {isLoan && totalQ > 0 && (
+            <div
+              onClick={() => onNavigate('questionnaire')}
+              style={{ cursor: 'pointer', flexShrink: 0, position: 'relative', width: 130, height: 130 }}
+            >
+              <CircleProgress pct={pct} color={accent} />
+              <div style={{
+                position: 'absolute', inset: 0,
+                display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center',
+                transform: 'none',
+              }}>
+                <span style={{ color: accent, fontSize: '26px', fontWeight: 800, lineHeight: 1 }}>{pct}٪</span>
+                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '10px', marginTop: '3px' }}>تکمیل</span>
+              </div>
+            </div>
           )}
         </div>
       </div>
 
-      {/* Stats grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px', marginBottom: '32px' }}>
-        {stats.map((s, i) => (
-          <div
-            key={i}
-            className="ws-stat-card"
-            onClick={() => s.view && onNavigate(s.view)}
-            style={{ cursor: s.view ? 'pointer' : 'default' }}
-          >
-            <div style={{ position: 'absolute', top: 0, right: 0, width: 70, height: 70, borderRadius: '0 16px 0 70px', background: s.color, opacity: 0.07 }} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: s.glow, display: 'flex', alignItems: 'center', justifyContent: 'center', color: s.color }}>
-                {s.icon}
-              </div>
-            </div>
-            <div style={{ color: 'var(--ws-text)', fontSize: '28px', fontWeight: 700, lineHeight: 1, marginBottom: '6px' }}>{s.value}</div>
-            <div style={{ color: 'var(--ws-text-muted)', fontSize: '12px' }}>{s.label}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Progress */}
+      {/* ═══════════════════════════════════════
+          PROGRESS BAR (loan)
+      ═══════════════════════════════════════ */}
       {isLoan && totalQ > 0 && (
-        <div className="ws-card" style={{ padding: '24px 28px', marginBottom: '32px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', direction: 'rtl' }}>
-            <span style={{ color: 'var(--ws-text)', fontSize: '14px', fontWeight: 600 }}>پیشرفت پرسش‌نامه</span>
-            <span style={{ color: 'var(--ws-gold)', fontWeight: 700, fontSize: '18px' }}>{pct}٪</span>
-          </div>
-          <div className="ws-progress-track">
+        <div style={{
+          background: '#fff', borderBottom: '1px solid var(--ws-border)',
+          padding: '14px 40px', direction: 'rtl',
+          display: 'flex', alignItems: 'center', gap: '16px',
+        }}>
+          <TrendingUp size={15} style={{ color: 'var(--ws-gold)', flexShrink: 0 }} />
+          <span style={{ color: 'var(--ws-text-muted)', fontSize: '12px', whiteSpace: 'nowrap' }}>
+            پرسش‌نامه راهبردی
+          </span>
+          <div className="ws-progress-track" style={{ flex: 1 }}>
             <div className="ws-progress-fill" style={{ width: `${pct}%` }} />
           </div>
-          <p style={{ color: 'var(--ws-text-muted)', fontSize: '12px', marginTop: '8px', direction: 'rtl' }}>
-            {completedQ} از {totalQ} سؤال تکمیل شده — {totalQ - completedQ} سؤال باقی‌مانده
-          </p>
+          <span style={{ color: 'var(--ws-text-muted)', fontSize: '12px', whiteSpace: 'nowrap' }}>
+            {completedQ} / {totalQ}
+          </span>
+          <button
+            onClick={() => onNavigate('questionnaire')}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '4px',
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: 'var(--ws-gold)', fontSize: '12px', fontWeight: 600,
+              fontFamily: 'inherit', whiteSpace: 'nowrap', flexShrink: 0,
+            }}
+          >
+            ادامه <ArrowLeft size={12} />
+          </button>
         </div>
       )}
 
-      {/* Quick actions */}
-      <div>
-        <div style={{ color: 'var(--ws-text-muted)', fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '16px', fontFamily: 'Times New Roman, serif' }}>دسترسی سریع</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '12px' }}>
-          {actions.map((a) => (
-            <button key={a.view} onClick={() => onNavigate(a.view)} className="ws-action-card">
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px', direction: 'rtl' }}>
-                  <div style={{ color: a.color, opacity: 0.8 }}>{a.icon}</div>
-                  <ChevronLeft size={16} style={{ color: 'var(--ws-text-dim)', transform: 'rotate(180deg)' }} />
+      {/* ═══════════════════════════════════════
+          CONTENT AREA
+      ═══════════════════════════════════════ */}
+      <div style={{ padding: '28px 40px 40px', direction: 'rtl' }} className="ws-panel-grid">
+
+        {/* ── Quick actions ── */}
+        <div>
+          <p style={{
+            fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em',
+            textTransform: 'uppercase', color: 'var(--ws-text-dim)',
+            marginBottom: '12px', fontFamily: 'Georgia, serif',
+          }}>
+            دسترسی سریع
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {[
+              { view: 'notes'         as View, label: 'یادداشت‌ها',       sub: `${notes.length} یادداشت`,    icon: <FileText size={18}/>,    color: '#3b82f6', bg: 'rgba(59,130,246,0.08)' },
+              { view: 'chat'          as View, label: 'گفتگو',             sub: `${messages.length} پیام`,    icon: <MessageSquare size={18}/>, color: '#0d9488', bg: 'rgba(13,148,136,0.08)' },
+              { view: 'files'         as View, label: 'فایل‌ها و مدارک',  sub: `${files.length} فایل`,       icon: <FolderOpen size={18}/>,   color: '#8b5cf6', bg: 'rgba(139,92,246,0.08)' },
+              ...(isLoan ? [{ view: 'questionnaire' as View, label: 'پرسش‌نامه راهبردی', sub: `${pct}٪ تکمیل`,  icon: <ClipboardList size={18}/>, color: '#d4a843', bg: 'rgba(212,168,67,0.08)' }] : []),
+            ].map(a => (
+              <button
+                key={String(a.view)}
+                onClick={() => onNavigate(a.view)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '14px',
+                  padding: '16px 18px', borderRadius: '14px', border: 'none',
+                  background: '#fff',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)',
+                  cursor: 'pointer', fontFamily: 'inherit', width: '100%',
+                  textAlign: 'right', transition: 'all 0.18s',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.transform = 'translateY(-2px)'
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.10)'
+                  e.currentTarget.style.borderLeft = `3px solid ${a.color}`
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.transform = 'translateY(0)'
+                  e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)'
+                  e.currentTarget.style.borderLeft = 'none'
+                }}
+              >
+                <div style={{
+                  width: '44px', height: '44px', borderRadius: '12px', flexShrink: 0,
+                  background: a.bg, color: a.color,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  {a.icon}
                 </div>
-                <div style={{ color: 'var(--ws-text)', fontSize: '15px', fontWeight: 600, marginBottom: '6px', direction: 'rtl' }}>{a.label}</div>
-                <div style={{ color: 'var(--ws-text-muted)', fontSize: '12px', lineHeight: 1.6, direction: 'rtl' }}>{a.desc}</div>
-              </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ color: 'var(--ws-text)', fontWeight: 600, fontSize: '14px', lineHeight: 1.3 }}>{a.label}</div>
+                  <div style={{ color: 'var(--ws-text-muted)', fontSize: '12px', marginTop: '2px' }}>{a.sub}</div>
+                </div>
+                <ArrowLeft size={14} style={{ color: 'var(--ws-text-dim)', flexShrink: 0 }} />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Recent notes ── */}
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+            <p style={{
+              fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em',
+              textTransform: 'uppercase', color: 'var(--ws-text-dim)',
+              fontFamily: 'Georgia, serif', margin: 0,
+            }}>
+              آخرین یادداشت‌ها
+            </p>
+            <button
+              onClick={() => onNavigate('notes')}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: 'var(--ws-gold)', fontSize: '11px', fontWeight: 600,
+                fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '3px',
+              }}
+            >
+              همه <ArrowLeft size={11} />
             </button>
-          ))}
+          </div>
+
+          <div style={{
+            background: '#fff',
+            borderRadius: '16px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.07)',
+            overflow: 'hidden',
+          }}>
+            {recentNotes.length === 0 ? (
+              <div style={{
+                padding: '48px 24px', textAlign: 'center',
+                color: 'var(--ws-text-dim)', fontSize: '13px',
+              }}>
+                هنوز یادداشتی ایجاد نشده
+              </div>
+            ) : recentNotes.map((n, i) => (
+              <div
+                key={n.id}
+                onClick={() => onNavigate('notes')}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '14px',
+                  padding: '14px 20px', cursor: 'pointer',
+                  borderBottom: i < recentNotes.length - 1 ? '1px solid var(--ws-border)' : 'none',
+                  transition: 'background 0.14s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--ws-card-hover)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                <div style={{
+                  width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0,
+                  background: 'rgba(59,130,246,0.08)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: '#3b82f6',
+                }}>
+                  <FileText size={15} />
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{
+                    color: 'var(--ws-text)', fontSize: '13px', fontWeight: 600,
+                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                  }}>
+                    {n.title || 'یادداشت بی‌عنوان'}
+                  </div>
+                  <div style={{ color: 'var(--ws-text-muted)', fontSize: '11px', marginTop: '2px' }}>
+                    {truncate(n.content.replace(/[#*`>\-]/g, '').trim(), 55) || '—'}
+                  </div>
+                </div>
+                <div style={{ color: 'var(--ws-text-dim)', fontSize: '10px', flexShrink: 0, direction: 'ltr' }}>
+                  {fmtDate(n.updated_at)}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Members */}
+          {members.length > 0 && (
+            <div style={{
+              marginTop: '16px', background: '#fff', borderRadius: '14px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.07)',
+              padding: '14px 20px',
+              display: 'flex', alignItems: 'center', gap: '14px',
+            }}>
+              <span style={{ color: 'var(--ws-text-muted)', fontSize: '12px', whiteSpace: 'nowrap' }}>اعضای پروژه</span>
+              <div style={{ display: 'flex', flex: 1 }}>
+                {members.slice(0, 5).map((m, i) => (
+                  <div key={m.id} title={m.email} style={{
+                    width: '30px', height: '30px', borderRadius: '50%',
+                    background: `linear-gradient(135deg, rgba(212,168,67,0.2), rgba(59,130,246,0.15))`,
+                    border: '2px solid #fff',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'var(--ws-gold)', fontSize: '11px', fontWeight: 700,
+                    marginLeft: i > 0 ? '-8px' : '0',
+                    position: 'relative', zIndex: 10 - i,
+                  }}>
+                    {(m.email?.[0] || 'U').toUpperCase()}
+                  </div>
+                ))}
+              </div>
+              <span style={{ color: 'var(--ws-text)', fontWeight: 700, fontSize: '13px' }}>
+                {members.length} نفر
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>

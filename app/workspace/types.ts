@@ -47,4 +47,12 @@ export type QAnswer = {
   note: string
 }
 
-export type View = 'overview' | 'questionnaire' | 'question' | 'notes' | 'files' | 'members'
+export type Message = {
+  id: string
+  project_id: string
+  sender_id: string
+  content: string
+  created_at: string
+}
+
+export type View = 'overview' | 'questionnaire' | 'question' | 'notes' | 'files' | 'members' | 'chat'
