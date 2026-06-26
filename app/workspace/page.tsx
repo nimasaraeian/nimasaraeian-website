@@ -85,7 +85,7 @@ function AuthScreen() {
             </div>
             <div><div style={{color:'#fff',fontWeight:700,fontSize:'1rem',letterSpacing:.3}}>نیما سرائیان</div><div style={{color:'rgba(255,255,255,.4)',fontSize:'.72rem'}}>Strategic Workspace</div></div>
           </div>
-          <h2 style={{color:'#fff',fontSize:'2.4rem',fontWeight:800,lineHeight:1.4,marginBottom:'1.2rem'}}>فضای کار<br/><span style={{background:'linear-gradient(90deg,#b8922a,#d4aa45)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>راهبردی</span></h2>
+          <h2 style={{color:'#fff',fontSize:'2.4rem',fontWeight:800,lineHeight:1.4,marginBottom:'1.2rem'}}>فضای کار<br/><span style={{color:'#d4aa45'}}>راهبردی</span></h2>
           <p style={{color:'rgba(255,255,255,.45)',fontSize:'.88rem',lineHeight:1.9,maxWidth:340,marginBottom:'3rem'}}>پلتفرم اختصاصی مدیریت پروژه‌های مشاوره، یادداشت‌های تیمی و اسناد محرمانه</p>
           {[['📁','مدیریت پروژه‌های چندنفره با دسترسی جداگانه'],['✉️','دعوت همکاران با ایمیل به هر پروژه'],['📝','یادداشت‌برداری تیمی با ذخیره خودکار'],['📎','آپلود و اشتراک فایل‌های پروژه']].map(([i,t],k)=>(
             <div key={k} style={{display:'flex',alignItems:'center',gap:'.9rem',marginBottom:'.75rem'}}>
@@ -363,7 +363,7 @@ function Dashboard({session}:{session:Session}) {
                           <div style={{height:5,background:colorToGradient(selP.project.color)}}/>
                           <div style={{padding:'1rem 1rem .85rem'}}>
                             <div style={{fontWeight:700,fontSize:'.92rem',color:'#1a1a2e',marginBottom:'.5rem',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',paddingLeft:'1.5rem'}}>{note.title}</div>
-                            <div style={{fontSize:'.78rem',color:'#999',lineHeight:1.7,overflow:'hidden',display:'-webkit-box',WebkitLineClamp:3,WebkitBoxOrient:'vertical',minHeight:'3.6rem'}}>{note.content||'بدون محتوا'}</div>
+                            <div style={{fontSize:'.78rem',color:'#999',lineHeight:1.7,overflow:'hidden',maxHeight:'3.78rem',minHeight:'3.78rem'}}>{note.content||'بدون محتوا'}</div>
                             <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginTop:'.85rem',paddingTop:'.7rem',borderTop:'1px solid #f5f5f5'}}>
                               <span style={{fontSize:'.68rem',color:'#ccc'}}>{fmtDate(note.updated_at)}</span>
                               <button onClick={e=>deleteNote(note.id,e)} className="btn btn-danger" style={{padding:'.25rem .55rem',fontSize:'.72rem',borderRadius:6}}>حذف</button>
