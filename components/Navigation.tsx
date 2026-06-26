@@ -15,6 +15,7 @@ export default function Navigation() {
     { name: 'SELPHLYZE', href: '/ai-marketing' },
     { name: 'About', href: '/about' },
     { name: 'Contact', href: '/contact' },
+    { name: 'Workspace', href: '/workspace' },
   ];
 
   return (
