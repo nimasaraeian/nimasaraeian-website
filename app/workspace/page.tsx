@@ -30,46 +30,155 @@ function AuthScreen() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f4f2ee', fontFamily: 'Vazirmatn, sans-serif' }} dir="rtl">
-      <div style={{ background: '#fff', borderRadius: 16, padding: '2.5rem', width: '100%', maxWidth: 380, boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{ width: 48, height: 48, background: '#0d1b2a', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
-            <span style={{ color: '#b8922a', fontSize: 22, fontWeight: 800 }}>N</span>
+    <div dir="rtl" style={{
+      minHeight: '100vh',
+      display: 'flex',
+      fontFamily: 'Vazirmatn, sans-serif',
+      background: '#0a1628',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap');
+        .ws-input {
+          width: 100%;
+          padding: 0.85rem 1rem;
+          background: rgba(255,255,255,0.07) !important;
+          border: 1px solid rgba(255,255,255,0.15) !important;
+          border-radius: 10px;
+          color: #fff !important;
+          font-size: 0.95rem;
+          font-family: Vazirmatn, sans-serif;
+          direction: rtl;
+          outline: none;
+          transition: border-color 0.2s, background 0.2s;
+          box-sizing: border-box;
+          -webkit-text-fill-color: #fff;
+          pointer-events: all !important;
+          position: relative;
+          z-index: 1;
+        }
+        .ws-input::placeholder { color: rgba(255,255,255,0.35); }
+        .ws-input:focus { border-color: #b8922a !important; background: rgba(255,255,255,0.1) !important; }
+        .ws-input:-webkit-autofill { -webkit-box-shadow: 0 0 0 30px #1a2d4a inset !important; -webkit-text-fill-color: #fff !important; }
+        @keyframes float1 { 0%,100%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(-20px) rotate(5deg);} }
+        @keyframes float2 { 0%,100%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(15px) rotate(-3deg);} }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:none;} }
+      `}</style>
+
+      {/* Background decorations */}
+      <div style={{ position: 'absolute', top: -100, right: -100, width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(184,146,42,0.15) 0%, transparent 70%)', animation: 'float1 8s ease-in-out infinite', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: -80, left: -80, width: 350, height: 350, borderRadius: '50%', background: 'radial-gradient(circle, rgba(42,122,184,0.12) 0%, transparent 70%)', animation: 'float2 10s ease-in-out infinite', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: '40%', left: '10%', width: 2, height: 120, background: 'linear-gradient(to bottom, transparent, rgba(184,146,42,0.4), transparent)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: '20%', right: '15%', width: 60, height: 60, border: '1px solid rgba(184,146,42,0.2)', borderRadius: 12, transform: 'rotate(15deg)', pointerEvents: 'none' }} />
+
+      {/* Left panel - branding (desktop) */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '3rem 4rem', position: 'relative' }}>
+        <div style={{ animation: 'fadeUp 0.6s ease forwards' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '3rem' }}>
+            <div style={{ width: 40, height: 40, background: 'linear-gradient(135deg, #b8922a, #d4aa45)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: '#fff', fontWeight: 800, fontSize: 18 }}>N</span>
+            </div>
+            <span style={{ color: '#fff', fontWeight: 700, fontSize: '1rem', letterSpacing: 0.5 }}>نیما سرائیان</span>
           </div>
-          <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0d1b2a', margin: 0 }}>فضای کار نیما</h1>
-          <p style={{ fontSize: '0.82rem', color: '#888', marginTop: '0.35rem' }}>ورود به محیط کار مشترک</p>
+
+          <h2 style={{ color: '#fff', fontSize: '2.2rem', fontWeight: 800, lineHeight: 1.4, margin: '0 0 1rem' }}>
+            فضای کار<br />
+            <span style={{ color: '#b8922a' }}>راهبردی</span>
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', lineHeight: 1.8, maxWidth: 320 }}>
+            پلتفرم مشترک برای مدیریت پروژه‌ها، یادداشت‌ها و اسناد محرمانه
+          </p>
+
+          <div style={{ marginTop: '3rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {['مدیریت پروژه‌های مشاوره', 'اشتراک‌گذاری اسناد امن', 'یادداشت‌برداری تیمی'].map((f, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#b8922a', flexShrink: 0 }} />
+                <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>{f}</span>
+              </div>
+            ))}
+          </div>
         </div>
+      </div>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-          <input
-            type="email"
-            placeholder="ایمیل"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-            style={inputStyle}
-          />
-          <input
-            type="password"
-            placeholder="رمز عبور"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-            style={inputStyle}
-          />
-          {error && <p style={{ color: '#c0392b', fontSize: '0.8rem', margin: 0 }}>{error}</p>}
-          <button type="submit" disabled={loading} style={btnGoldStyle}>
-            {loading ? 'در حال ورود...' : mode === 'login' ? 'ورود' : 'ثبت‌نام'}
-          </button>
-        </form>
+      {/* Right panel - login form */}
+      <div style={{ width: '100%', maxWidth: 460, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', position: 'relative', zIndex: 2 }}>
+        <div style={{ width: '100%', animation: 'fadeUp 0.5s ease forwards' }}>
+          <div style={{
+            background: 'rgba(255,255,255,0.05)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: 20,
+            padding: '2.5rem',
+          }}>
+            <h1 style={{ color: '#fff', fontSize: '1.4rem', fontWeight: 700, margin: '0 0 0.4rem' }}>
+              {mode === 'login' ? 'خوش آمدید' : 'ایجاد حساب'}
+            </h1>
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.82rem', margin: '0 0 2rem' }}>
+              {mode === 'login' ? 'با ایمیل و رمز عبور وارد شوید' : 'اطلاعات حساب خود را وارد کنید'}
+            </p>
 
-        <p style={{ textAlign: 'center', fontSize: '0.8rem', color: '#888', marginTop: '1.25rem' }}>
-          {mode === 'login' ? 'حساب ندارید؟ ' : 'حساب دارید؟ '}
-          <button onClick={() => setMode(m => m === 'login' ? 'signup' : 'login')}
-            style={{ background: 'none', border: 'none', color: '#b8922a', cursor: 'pointer', fontWeight: 600, padding: 0, fontFamily: 'inherit' }}>
-            {mode === 'login' ? 'ثبت‌نام' : 'ورود'}
-          </button>
-        </p>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'block', color: 'rgba(255,255,255,0.6)', fontSize: '0.78rem', marginBottom: '0.4rem', fontWeight: 500 }}>ایمیل</label>
+                <input
+                  className="ws-input"
+                  type="email"
+                  placeholder="name@example.com"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  required
+                  autoComplete="email"
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', color: 'rgba(255,255,255,0.6)', fontSize: '0.78rem', marginBottom: '0.4rem', fontWeight: 500 }}>رمز عبور</label>
+                <input
+                  className="ws-input"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                  autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                />
+              </div>
+
+              {error && (
+                <div style={{ background: 'rgba(192,57,43,0.15)', border: '1px solid rgba(192,57,43,0.3)', borderRadius: 8, padding: '0.65rem 0.85rem', color: '#ff7c6e', fontSize: '0.8rem' }}>
+                  {error}
+                </div>
+              )}
+
+              <button type="submit" disabled={loading} style={{
+                marginTop: '0.5rem',
+                padding: '0.9rem',
+                background: loading ? 'rgba(184,146,42,0.5)' : 'linear-gradient(135deg, #b8922a, #d4aa45)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 10,
+                fontWeight: 700,
+                fontSize: '0.95rem',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                fontFamily: 'Vazirmatn, sans-serif',
+                transition: 'opacity 0.2s',
+                width: '100%',
+              }}>
+                {loading ? '...' : mode === 'login' ? 'ورود به فضای کار' : 'ایجاد حساب'}
+              </button>
+            </form>
+
+            <div style={{ marginTop: '1.5rem', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1.25rem' }}>
+              <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.8rem' }}>
+                {mode === 'login' ? 'حساب ندارید؟ ' : 'حساب دارید؟ '}
+              </span>
+              <button onClick={() => { setMode(m => m === 'login' ? 'signup' : 'login'); setError('') }}
+                style={{ background: 'none', border: 'none', color: '#b8922a', cursor: 'pointer', fontWeight: 600, fontSize: '0.8rem', fontFamily: 'inherit', padding: 0 }}>
+                {mode === 'login' ? 'ثبت‌نام کنید' : 'وارد شوید'}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
