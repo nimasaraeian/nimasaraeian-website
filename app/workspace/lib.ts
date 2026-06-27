@@ -12,7 +12,7 @@ export const IS_LOAN = (t: string) =>
   t.includes('atieh') ||
   t.toLowerCase().includes('financial')
 
-export const DISPLAY_NAME = (t: string) => (IS_LOAN(t) ? 'Atieh Financial' : t)
+export const DISPLAY_NAME = (t: string) => (IS_LOAN(t) ? 'نمای کلی کلینیک' : t)
 
 export const AUTOSAVE_MS = 1200
 

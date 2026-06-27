@@ -70,7 +70,7 @@ export default function OverviewPanel({
       ═══════════════════════════════════════ */}
       <div style={{
         background: `linear-gradient(135deg, #0d1526 0%, ${project.color}dd 100%)`,
-        padding: '36px 40px 40px',
+        padding: 'clamp(20px,5vw,40px) clamp(16px,5vw,40px) clamp(24px,5vw,40px)',
         position: 'relative', overflow: 'hidden',
         direction: 'rtl',
       }}>
@@ -190,7 +190,7 @@ export default function OverviewPanel({
       {/* ═══════════════════════════════════════
           CONTENT AREA
       ═══════════════════════════════════════ */}
-      <div style={{ padding: '28px 40px 40px', direction: 'rtl' }} className="ws-panel-grid">
+      <div style={{ padding: 'clamp(16px,4vw,28px) clamp(16px,5vw,40px) clamp(24px,5vw,40px)', direction: 'rtl' }} className="ws-panel-grid">
 
         {/* ── Quick actions ── */}
         <div>

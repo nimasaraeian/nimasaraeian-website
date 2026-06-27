@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, ArrowLeft } from 'lucide-react'
 import { QUESTIONS } from '../data'
 import type { QStatus } from '../data'
 import { STATUS_LABELS } from '../lib'
@@ -10,31 +10,47 @@ type Props = {
   questionId: string
   answer: QAnswer
   onBack: () => void
+  onNext?: (nextId: string) => void
   onUpdate: (field: 'answer' | 'status' | 'note', value: string) => void
 }
 
-export default function QuestionDetailPanel({ questionId, answer, onBack, onUpdate }: Props) {
-  const q = QUESTIONS.find((x) => x.id === questionId)
+export default function QuestionDetailPanel({ questionId, answer, onBack, onNext, onUpdate }: Props) {
+  const idx = QUESTIONS.findIndex((x) => x.id === questionId)
+  const q = QUESTIONS[idx]
   if (!q) return null
 
-  return (
-    <div className="p-6 md:p-10 max-w-3xl ws-animate-in overflow-y-auto ws-main-scrollbar h-full">
-      <button
-        onClick={onBack}
-        className="flex items-center gap-1.5 text-[var(--ws-text-muted)] text-sm hover:text-[var(--ws-text)] mb-8 transition-colors"
-      >
-        <ArrowRight size={16} />
-        بازگشت به پرسش‌نامه
-      </button>
+  const nextQ = QUESTIONS[idx + 1] ?? null
 
+  return (
+    <div className="p-6 md:p-10 max-w-3xl ws-animate-in overflow-y-auto ws-scroll h-full" dir="rtl">
+
+      {/* Toolbar */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
+        <button
+          onClick={onBack}
+          className="flex items-center gap-1.5 text-[var(--ws-text-muted)] text-sm hover:text-[var(--ws-text)] transition-colors"
+        >
+          <ArrowRight size={16} />
+          بازگشت به پرسش‌نامه
+        </button>
+        <span style={{ fontSize: '12px', color: 'var(--ws-text-muted)' }}>
+          {idx + 1} از {QUESTIONS.length}
+        </span>
+      </div>
+
+      {/* Question header */}
       <p className="text-[var(--ws-text-muted)] text-xs mb-2">بخش {q.section}</p>
       <h2 className="text-[var(--ws-text)] text-lg font-bold leading-relaxed mb-3">{q.title}</h2>
       {q.guidance && (
-        <p className="text-[var(--ws-text-muted)] text-sm leading-relaxed mb-8 bg-slate-50 rounded-xl p-4 border border-[var(--ws-border)]">
+        <p
+          className="text-[var(--ws-text-muted)] text-sm leading-relaxed mb-8 rounded-xl p-4 border border-[var(--ws-border)]"
+          style={{ background: '#f8f9fc' }}
+        >
           {q.guidance}
         </p>
       )}
 
+      {/* Fields */}
       <div className="space-y-6">
         <div>
           <label className="block text-[var(--ws-text)] text-sm font-medium mb-2">پاسخ</label>
@@ -44,6 +60,7 @@ export default function QuestionDetailPanel({ questionId, answer, onBack, onUpda
             placeholder="پاسخ خود را بنویسید..."
             rows={6}
             className="ws-input resize-y leading-relaxed"
+            style={{ background: '#ffffff', color: '#0d1526' }}
           />
         </div>
 
@@ -54,7 +71,8 @@ export default function QuestionDetailPanel({ questionId, answer, onBack, onUpda
             onChange={(e) => onUpdate('note', e.target.value)}
             placeholder="یادداشت‌های داخلی..."
             rows={3}
-            className="ws-input resize-y leading-relaxed text-[var(--ws-text-muted)]"
+            className="ws-input resize-y leading-relaxed"
+            style={{ background: '#ffffff', color: '#0d1526' }}
           />
         </div>
 
@@ -76,6 +94,27 @@ export default function QuestionDetailPanel({ questionId, answer, onBack, onUpda
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Next question button */}
+      <div style={{ marginTop: '36px', paddingTop: '24px', borderTop: '1px solid var(--ws-border)', display: 'flex', justifyContent: 'flex-start' }}>
+        {nextQ ? (
+          <button
+            onClick={() => onNext?.(nextQ.id)}
+            className="ws-btn ws-btn-primary"
+            style={{ gap: '8px' }}
+          >
+            سوال بعدی
+            <ArrowLeft size={15} />
+          </button>
+        ) : (
+          <button
+            onClick={onBack}
+            className="ws-btn ws-btn-primary"
+          >
+            بازگشت به لیست سوالات ✓
+          </button>
+        )}
       </div>
     </div>
   )

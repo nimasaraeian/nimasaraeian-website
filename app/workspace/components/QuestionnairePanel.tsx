@@ -123,11 +123,6 @@ export default function QuestionnairePanel({
                 <div className="flex-1 min-w-0">
                   <p className="text-[var(--ws-text)] text-sm leading-relaxed mb-1.5">{q.title}</p>
                   <div className="flex items-center gap-2 text-xs">
-                    {q.required && (
-                      <span className="text-[var(--ws-gold)] bg-[var(--ws-gold-dim)] px-2 py-0.5 rounded">
-                        الزامی
-                      </span>
-                    )}
                     <span style={{ color: statusColor(status) }}>{STATUS_LABELS[status]}</span>
                   </div>
                 </div>

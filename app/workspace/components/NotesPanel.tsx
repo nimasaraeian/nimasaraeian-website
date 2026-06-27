@@ -101,7 +101,7 @@ export default function NotesPanel({
         {/* Content */}
         <div style={{ flex: 1, overflowY: 'auto', background: 'var(--ws-bg)' }} className="ws-scroll">
           {mode === 'edit' ? (
-            <div style={{ padding: '32px 48px', maxWidth: '800px', margin: '0 auto' }}>
+            <div className="ws-note-editor-inner" style={{ padding: 'clamp(20px,5vw,32px) clamp(16px,6vw,48px)', maxWidth: '800px', margin: '0 auto' }}>
               <input
                 value={noteTitle}
                 onChange={e => onTitleChange(e.target.value)}
@@ -126,7 +126,7 @@ export default function NotesPanel({
               />
             </div>
           ) : (
-            <div style={{ padding: '32px 48px', maxWidth: '800px', margin: '0 auto' }}>
+            <div className="ws-note-editor-inner" style={{ padding: 'clamp(20px,5vw,32px) clamp(16px,6vw,48px)', maxWidth: '800px', margin: '0 auto' }}>
               <h1 style={{
                 color: 'var(--ws-text)', fontSize: '24px', fontWeight: 700,
                 marginBottom: '6px', direction: 'rtl', textAlign: 'right',
@@ -153,7 +153,7 @@ export default function NotesPanel({
 
   /* ── Notes list view ────────────────────── */
   return (
-    <div className="ws-animate-in ws-mobile-padded" style={{ padding: '32px 36px' }}>
+    <div className="ws-animate-in ws-mobile-padded" style={{ padding: 'clamp(16px,4vw,32px) clamp(16px,4vw,36px)' }}>
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
         marginBottom: '28px', direction: 'rtl',

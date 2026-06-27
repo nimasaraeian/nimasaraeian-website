@@ -149,6 +149,7 @@ export default function WorkspaceApp({ session }: { session: Session }) {
     setSelNote(null)
     setActiveSection(null)
     setMessages([])
+    setAnswers({})
     loadNotes()
     loadFiles()
     loadMembers()
@@ -421,18 +422,19 @@ export default function WorkspaceApp({ session }: { session: Session }) {
 
       {/* ── Three-column (desktop) / Full-screen (mobile) ── */}
       <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
-        <main className="flex-1 min-h-0 overflow-hidden bg-[var(--ws-bg)] flex flex-col ws-mobile-padded">
+        <main className="flex-1 min-h-0 overflow-hidden bg-[var(--ws-bg)] flex flex-col">
         {!hasProjects ? (
           <EmptyProjectsWelcome
             showNewProject={showNewProject}
             newTitle={newTitle}
             creating={creating}
             onToggleNewProject={() => setShowNewProject(true)}
+            onCancelNewProject={() => setShowNewProject(false)}
             onNewTitleChange={setNewTitle}
             onCreateProject={createProject}
           />
         ) : view === 'overview' ? (
-          <div className="flex-1 overflow-y-auto ws-main-scrollbar">
+          <div className="flex-1 overflow-y-auto ws-main-scrollbar ws-mobile-padded">
             <OverviewPanel
               project={selP.project}
               notes={notes}
@@ -475,7 +477,7 @@ export default function WorkspaceApp({ session }: { session: Session }) {
             />
           </div>
         ) : view === 'files' ? (
-          <div className="flex-1 overflow-y-auto ws-main-scrollbar">
+          <div className="flex-1 overflow-y-auto ws-main-scrollbar ws-mobile-padded">
             <FilesPanel
               project={selP.project}
               files={files}
@@ -487,7 +489,7 @@ export default function WorkspaceApp({ session }: { session: Session }) {
             />
           </div>
         ) : view === 'members' && isOwner ? (
-          <div className="flex-1 overflow-y-auto ws-main-scrollbar">
+          <div className="flex-1 overflow-y-auto ws-main-scrollbar ws-mobile-padded">
             <MembersPanel
               project={selP.project}
               members={members}
@@ -497,14 +499,14 @@ export default function WorkspaceApp({ session }: { session: Session }) {
               inviteMsg={inviteMsg}
               onInviteEmailChange={setInviteEmail}
               onInvite={inviteMember}
-              onRemoveMember={(id) => {
-                supabase.from('project_members').delete().eq('id', id)
+              onRemoveMember={async (id) => {
+                await supabase.from('project_members').delete().eq('id', id)
                 setMembers((ms) => ms.filter((x) => x.id !== id))
               }}
             />
           </div>
         ) : view === 'questionnaire' && isLoan ? (
-          <div className="flex-1 min-h-0 overflow-hidden">
+          <div className="flex-1 min-h-0 overflow-hidden ws-mobile-padded">
             <QuestionnairePanel
               answers={answers}
               activeSection={activeSection}
@@ -520,7 +522,7 @@ export default function WorkspaceApp({ session }: { session: Session }) {
             />
           </div>
         ) : view === 'question' && selQId && isLoan ? (
-          <div className="flex-1 min-h-0 overflow-hidden">
+          <div className="flex-1 min-h-0 overflow-hidden ws-mobile-padded">
             <QuestionDetailPanel
               questionId={selQId}
               answer={
@@ -532,6 +534,7 @@ export default function WorkspaceApp({ session }: { session: Session }) {
                 }
               }
               onBack={() => setView('questionnaire')}
+              onNext={(nextId) => setSelQId(nextId)}
               onUpdate={(field, value) => updateAnswer(selQId, field, value)}
             />
           </div>

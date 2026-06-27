@@ -7,6 +7,7 @@ type Props = {
   newTitle: string
   creating: boolean
   onToggleNewProject: () => void
+  onCancelNewProject: () => void
   onNewTitleChange: (v: string) => void
   onCreateProject: () => void
 }
@@ -16,6 +17,7 @@ export default function EmptyProjectsWelcome({
   newTitle,
   creating,
   onToggleNewProject,
+  onCancelNewProject,
   onNewTitleChange,
   onCreateProject,
 }: Props) {
@@ -24,17 +26,19 @@ export default function EmptyProjectsWelcome({
       <div className="text-center max-w-md">
         <div
           className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6"
-          style={{ background: 'var(--ws-gold-dim)' }}
+          style={{ background: 'var(--ws-gold-glow)', border: '1px solid var(--ws-gold-border)' }}
         >
-          <Plus size={32} className="text-[var(--ws-gold)]" />
+          <Plus size={32} style={{ color: 'var(--ws-gold)' }} />
         </div>
-        <h2 className="text-[var(--ws-text)] text-2xl font-bold mb-3">به فضای کار خوش آمدید</h2>
-        <p className="text-[var(--ws-text-muted)] mb-8 leading-relaxed">
+        <h2 style={{ color: 'var(--ws-text)', fontSize: '22px', fontWeight: 700, marginBottom: '12px' }}>
+          به فضای کار خوش آمدید
+        </h2>
+        <p style={{ color: 'var(--ws-text-muted)', marginBottom: '32px', lineHeight: 1.75, fontSize: '14px' }}>
           اولین پروژه خود را بسازید تا مستندات، فایل‌ها و پرسش‌نامه را مدیریت کنید.
         </p>
 
         {showNewProject ? (
-          <div className="ws-card p-6 space-y-4 text-right">
+          <div className="ws-card" style={{ padding: '24px', textAlign: 'right' }}>
             <input
               className="ws-input"
               placeholder="نام پروژه..."
@@ -42,18 +46,28 @@ export default function EmptyProjectsWelcome({
               onChange={(e) => onNewTitleChange(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && onCreateProject()}
               autoFocus
+              style={{ marginBottom: '12px', background: '#ffffff', color: '#0d1526' }}
             />
-            <div className="flex gap-3">
-              <button onClick={onCreateProject} disabled={creating || !newTitle.trim()} className="ws-btn-gold flex-1">
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                onClick={onCreateProject}
+                disabled={creating || !newTitle.trim()}
+                className="ws-btn ws-btn-primary"
+                style={{ flex: 1, justifyContent: 'center' }}
+              >
                 {creating ? 'در حال ایجاد...' : 'ایجاد پروژه'}
               </button>
-              <button onClick={onToggleNewProject} className="ws-btn-ghost flex-1">
+              <button
+                onClick={onCancelNewProject}
+                className="ws-btn ws-btn-ghost"
+                style={{ flex: 1, justifyContent: 'center' }}
+              >
                 انصراف
               </button>
             </div>
           </div>
         ) : (
-          <button onClick={onToggleNewProject} className="ws-btn-primary inline-flex items-center gap-2">
+          <button onClick={onToggleNewProject} className="ws-btn ws-btn-primary">
             <Plus size={16} />
             پروژه جدید
           </button>

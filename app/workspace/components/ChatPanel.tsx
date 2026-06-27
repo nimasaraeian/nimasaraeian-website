@@ -198,12 +198,15 @@ export default function ChatPanel({ project, messages, members, userId, sending,
       </div>
 
       {/* ── Input ─────────────────────────────────── */}
-      <div style={{
-        padding: '14px 28px 18px',
-        borderTop: '1px solid var(--ws-border)',
-        flexShrink: 0,
-        background: 'var(--ws-card-high)',
-      }}>
+      <div
+        className="ws-chat-input-area"
+        style={{
+          padding: 'clamp(10px,3vw,14px) clamp(14px,4vw,28px) clamp(14px,3vw,18px)',
+          borderTop: '1px solid var(--ws-border)',
+          flexShrink: 0,
+          background: 'var(--ws-card-high)',
+        }}
+      >
         <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
           <textarea
             ref={textareaRef}
