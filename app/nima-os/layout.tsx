@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://nimasaraeian.vercel.app"),
   title: "Nima OS",
   description: "مرکز فرمان شخصی نیما برای کار، سلامت، پروژه‌ها و دستیار هوشمند",
-  manifest: "/nima-os/manifest.webmanifest",
+  manifest: "/nima-os/manifest-v2.webmanifest",
   applicationName: "Nima OS",
   alternates: {
     canonical: APP_URL,
@@ -27,8 +27,8 @@ export const metadata: Metadata = {
     startupImage: [],
   },
   icons: {
-    icon: "/favicon.png",
-    apple: "/favicon.png",
+    icon: "/favicon.png?v=nima-os-2",
+    apple: "/favicon.png?v=nima-os-2",
   },
   other: {
     "mobile-web-app-capable": "yes",
