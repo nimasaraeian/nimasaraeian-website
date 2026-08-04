@@ -9,15 +9,14 @@ type ChatMessage = {
   content: string;
 };
 
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 function safeText(value: unknown, maxLength = 5000): string {
   return typeof value === "string" ? value.slice(0, maxLength) : "";
 }
 
 export async function POST(request: NextRequest) {
   try {
-    if (!process.env.OPENAI_API_KEY) {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
       return NextResponse.json(
         { error: "کلید OpenAI روی Vercel تنظیم نشده است." },
         { status: 503 },
@@ -71,6 +70,7 @@ export async function POST(request: NextRequest) {
       .map((message) => `${message.role}: ${message.content}`)
       .join("\n");
 
+    const client = new OpenAI({ apiKey });
     const response = await client.responses.create({
       model: "gpt-5-mini",
       store: false,
