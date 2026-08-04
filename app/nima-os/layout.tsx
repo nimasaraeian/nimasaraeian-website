@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import ManifestGuard from "./ManifestGuard";
 
 export const metadata: Metadata = {
   title: "Nima OS",
@@ -28,5 +29,10 @@ export const viewport: Viewport = {
 };
 
 export default function NimaOSLayout({ children }: { children: ReactNode }) {
-  return children;
+  return (
+    <>
+      <ManifestGuard />
+      {children}
+    </>
+  );
 }
