@@ -15,11 +15,11 @@ export async function GET(request: NextRequest) {
     .replace(/<title>.*?<\/title>/i, "<title>Nima OS</title>")
     .replace(
       "</head>",
-      '<link rel="manifest" href="/nima-os-independent.webmanifest?v=5"><link rel="apple-touch-icon" href="/favicon.png?v=nima-os-v5"></head>',
+      '<link rel="manifest" href="/nima-os-independent.webmanifest?v=6"><link rel="apple-touch-icon" href="/favicon.png?v=nima-os-v6"></head>',
     )
     .replace(
       "</body>",
-      '<script src="/nima-os-notifications-v2.js?v=20260804-custom-1"></script><script src="/nima-os-health-bridge.js?v=20260805-1"></script><script src="/nima-os-health-feedback.js?v=20260805-1"></script></body>',
+      '<script src="/nima-os-notifications-v2.js?v=20260804-custom-1"></script><script src="/nima-os-health-proxy.js?v=20260805-2"></script><script src="/nima-os-health-bridge.js?v=20260805-2"></script><script src="/nima-os-health-feedback.js?v=20260805-2"></script></body>',
     );
 
   return new Response(html, {
