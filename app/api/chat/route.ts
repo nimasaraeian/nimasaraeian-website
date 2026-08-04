@@ -9,33 +9,38 @@ type ChatMessage = {
   content: string;
 };
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Cache-Control": "no-store",
+};
+
+function json(body: unknown, status = 200) {
+  return NextResponse.json(body, { status, headers: corsHeaders });
+}
+
 function safeText(value: unknown, maxLength = 5000): string {
   return typeof value === "string" ? value.slice(0, maxLength) : "";
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: corsHeaders });
 }
 
 export async function POST(request: NextRequest) {
   try {
     const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json(
-        { error: "کلید OpenAI روی Vercel تنظیم نشده است." },
-        { status: 503 },
-      );
-    }
+    if (!apiKey) return json({ error: "کلید OpenAI روی Vercel تنظیم نشده است." }, 503);
 
     const body = await request.json().catch(() => ({}));
-
-    if (body?.ping === true) {
-      return NextResponse.json({ ok: true, configured: true });
-    }
-
     const requiredToken = process.env.NIMA_OS_APP_TOKEN;
+
     if (requiredToken && body?.accessToken !== requiredToken) {
-      return NextResponse.json(
-        { error: "کد دسترسی Nima OS صحیح نیست." },
-        { status: 401 },
-      );
+      return json({ error: "کد دسترسی Nima OS صحیح نیست." }, 401);
     }
+
+    if (body?.ping === true) return json({ ok: true, configured: true });
 
     const rawMessages = Array.isArray(body?.messages) ? body.messages : [];
     const messages: ChatMessage[] = rawMessages
@@ -49,21 +54,12 @@ export async function POST(request: NextRequest) {
       })
       .filter((message: ChatMessage) => message.content.trim().length > 0);
 
-    if (messages.length === 0) {
-      return NextResponse.json(
-        { error: "پیامی برای ارسال وجود ندارد." },
-        { status: 400 },
-      );
-    }
+    if (messages.length === 0) return json({ error: "پیامی برای ارسال وجود ندارد." }, 400);
 
     const context = {
-      tasks: Array.isArray(body?.context?.tasks)
-        ? body.context.tasks.slice(0, 20)
-        : [],
+      tasks: Array.isArray(body?.context?.tasks) ? body.context.tasks.slice(0, 20) : [],
       health: body?.context?.health ?? {},
-      projects: Array.isArray(body?.context?.projects)
-        ? body.context.projects.slice(0, 10)
-        : [],
+      projects: Array.isArray(body?.context?.projects) ? body.context.projects.slice(0, 10) : [],
     };
 
     const transcript = messages
@@ -81,14 +77,9 @@ export async function POST(request: NextRequest) {
     });
 
     const reply = response.output_text?.trim();
-    if (!reply) {
-      return NextResponse.json(
-        { error: "مدل پاسخی برنگرداند. دوباره تلاش کن." },
-        { status: 502 },
-      );
-    }
+    if (!reply) return json({ error: "مدل پاسخی برنگرداند. دوباره تلاش کن." }, 502);
 
-    return NextResponse.json({ reply });
+    return json({ reply });
   } catch (error) {
     const status =
       typeof error === "object" && error && "status" in error
@@ -102,6 +93,6 @@ export async function POST(request: NextRequest) {
           ? "سقف مصرف یا موجودی API کافی نیست. بخش Billing را بررسی کن."
           : "ارتباط با OpenAI برقرار نشد. دوباره تلاش کن.";
 
-    return NextResponse.json({ error: message }, { status });
+    return json({ error: message }, status);
   }
 }
