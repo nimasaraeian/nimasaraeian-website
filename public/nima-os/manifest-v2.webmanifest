@@ -1,0 +1,28 @@
+{
+  "id": "/nima-os-app-v2",
+  "name": "Nima OS",
+  "short_name": "Nima OS",
+  "description": "مرکز فرمان شخصی نیما برای کار، سلامت، پروژه‌ها و دستیار هوشمند",
+  "start_url": "/nima-os?home=1",
+  "scope": "/nima-os",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#050914",
+  "theme_color": "#07101f",
+  "lang": "fa",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "/favicon.png?v=nima-os-2",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.png?v=nima-os-2",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
